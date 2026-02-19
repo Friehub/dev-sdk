@@ -1,5 +1,5 @@
 {
-    "name": "taas-sdk",
+    "name": "@friehub/taas-sdk",
     "version": "1.0.0",
     "private": true,
     "description": "",
