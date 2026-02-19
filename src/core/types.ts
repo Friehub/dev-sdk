@@ -43,3 +43,15 @@ export interface Recipe {
         };
     };
 }
+export interface RecipeExecutionResult {
+    success: boolean;
+    winningOutcome: any;
+    confidence: number;
+    proof?: {
+        recipeHash: string;
+        attestation: string;
+        [key: string]: any;
+    };
+    logs?: string[];
+    [key: string]: any;
+}
