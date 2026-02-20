@@ -1,6 +1,15 @@
 import { BuilderContext } from '../core/context';
 
+/**
+ * Utility for performing proxied web searches through the Sovereign Truth Gateway.
+ */
 export class Search {
+    /**
+     * Executes a high-quality web search and returns a node reference for use in recipes.
+     * @param query The search term or question to investigate.
+     * @param options Configuration for the search engine and result count.
+     * @returns A node object representing the search result (toString handles string interpolation).
+     */
     static async query(query: string, options: { count?: number, engine?: string } = {}): Promise<any> {
         const ctx = BuilderContext.get();
         const id = `node_${paramsHash(query + Date.now())}`;

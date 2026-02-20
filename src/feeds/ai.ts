@@ -1,7 +1,15 @@
 import { BuilderContext } from '../core/context';
 import { z } from 'zod';
 
+/**
+ * Engine for performing AI reasoning and consensus through the Friehub Prediction Network.
+ */
 export class AI {
+    /**
+     * Asks an AI model a question, optionally providing a search context or strict Zod schema.
+     * @param options Configuration including model choice, prompt, and optional context.
+     * @returns A node object representing the distilled AI result.
+     */
     static async ask(options: {
         model: string,
         prompt: string,

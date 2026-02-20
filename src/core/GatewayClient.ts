@@ -2,12 +2,16 @@ import axios from 'axios';
 
 /**
  * Standardized Client for the Sovereign Truth Gateway.
- * Used by "Thin Client" nodes and extensions to fetch truth 
- * without needing private logic or API keys.
+ * Used by "Thin Client" applications to fetch verified truth 
+ * without needing to build full recipes or manage private API keys.
  */
 export class TruthGatewayClient {
     private baseUrl: string;
 
+    /**
+     * Initializes the client with a gateway URL.
+     * @param baseUrl Defaults to INDEXER_API_URL or http://localhost:3002.
+     */
     constructor(baseUrl?: string) {
         this.baseUrl = baseUrl || process.env.INDEXER_API_URL || 'http://localhost:3002';
     }
