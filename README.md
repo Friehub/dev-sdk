@@ -42,6 +42,16 @@ Through the `TruthGatewayClient`, developers have immediate access to:
 
 ---
 
+## 🎨 Example Gallery
+
+Explore full implementation templates in the [/examples](file:///home/oxisrael/Friehub/Taas/taas-sdk/examples) directory:
+
+1.  **[01_crypto_price.ts](file:///home/oxisrael/Friehub/Taas/taas-sdk/examples/01_crypto_price.ts)**: Institutional-grade price verification using the Truth Gateway.
+2.  **[02_sports_result.ts](file:///home/oxisrael/Friehub/Taas/taas-sdk/examples/02_sports_result.ts)**: Attesting to real-world sports match outcomes with structured metadata.
+3.  **[03_market_sentiment.ts](file:///home/oxisrael/Friehub/Taas/taas-sdk/examples/03_market_sentiment.ts)**: Subjective truth synthesis using proxied Search + AI Reasoner nodes.
+
+---
+
 ## 🚀 Quick Start Guide
 
 ### Installation
