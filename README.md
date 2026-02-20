@@ -1,75 +1,103 @@
-# Friehub TaaS SDK
+# @friehub/taas-sdk
 
-**Professional Development Kit for the Friehub Truth-as-a-Service (TaaS) Protocol.**
+**Institutional Developer Kit for Decentralized Truth Attestation**
 
-The Friehub TaaS SDK is an institutional-grade toolkit designed for developers to build, test, and deploy decentralized truth feeds. It abstracts the complexity of the underlying FTS execution engine, allowing for the rapid creation of resilient, multi-source data ingestion logic.
+`@friehub/taas-sdk` is the official development toolkit for interacting with the Friehub Truth-as-a-Service (TaaS) ecosystem. It allows developers to build, verify, and deploy "Truth Recipes" and interact with the **Sovereign Truth Gateway** using a professional, type-safe interface.
 
-## Core Pillars
+---
 
-### 1. Recipe Engine
-The SDK provides a fluent interface for defining "Data Recipes"—deterministic DAGs that describe how data should be fetched, transformed, and resolved.
-- **Input Definition**: Strictly typed variable definitions (String, Number, Address, Boolean).
-- **Logic Pipeline**: A sequential or parallel execution flow of data ingestion and AI reasoning nodes.
-- **Resolution**: Configurable outcome logic (Binary, Scalar, Categorical, Probabilistic).
+## 🏛️ Core Capabilities
 
-### 2. Execution Environment
-Recipes defined in the SDK are compiled into a protocol-standard JSON format, which can be executed by any FTS Truth Node.
-- **Deterministic Runtime**: Ensures identical results across different node operators.
-- **Cryptographic Attestations**: Automated EIP-712 signing of execution results.
-- **Auditability**: Generates full execution traces and IPFS-based proof certificates.
+This SDK abstracts the complexity of decentralized data fetching and consensus, providing three primary integration paths:
 
-### 3. Keyless Data Infrastructure
-The SDK is designed for the "Keyless Node" architectural standard. 
-- **Truth Gateway**: Data requests for 50+ sources, including Search and AI models, are automatically proxied through the centralized Truth Gateway.
-- **Security**: Node operators do not manage individual API keys, reducing operational risk and preventing credential leakage.
+### 1. The Recipe Engine (Autonomous Logic)
+Define deterministic execution flows (DAGs) that describe exactly how "Truth" should be derived from the world.
+- **Strictly Typed Inputs**: Define parameters for your truth requests (e.g., Asset Symbols, Match IDs).
+- **Logical Nodes**: Chain together `Search`, `AI Reasoning`, and `Data Extraction` nodes.
+- **Autonomous Execution**: Compiled recipes can be executed by any Friehub Node without local infrastructure.
 
-## Getting Started
+### 2. The Truth Gateway Client (Thin Integration)
+For applications that need direct access to verified data without building full recipes.
+- **Zero-Key Architecture**: Fetch data from 50+ premium providers without managing individual API keys.
+- **Institutional Domains**: Semantic helpers for Finance, Sports, Economics, and Environmental data.
+- **Built-in Resilience**: Automatic fallback and circuit breaking handled at the gateway level.
+
+### 3. AI & Search Synthesis
+Native integration with the Friehub Prediction Engine:
+- **Search Feed**: Proxied, high-quality web search results.
+- **AI Reasoners**: Multi-model consensus (Gemini, Claude, GPT) to analyze unstructured data.
+
+---
+
+## 📊 Available Data Domains
+
+Through the `TruthGatewayClient`, developers have immediate access to:
+
+| Domain | Available Data | Usage Example |
+| :--- | :--- | :--- |
+| **Finance** | Spot Prices, Historical PriceAt, Forex Pairs | `gateway.finance().price('BTC')` |
+| **Sports** | Livescores, Schedules, Match Details (10+ Sports) | `gateway.sports().livescore('EPL')` |
+| **Economics**| FRED Series (GDP, Inflation), Employment Data | `gateway.economics().series('CPIAUCSL')` |
+| **Environmental** | Real-time Weather, Global Forecasts | `gateway.environmental().current(lat, lon)` |
+
+---
+
+## 🚀 Quick Start Guide
 
 ### Installation
 ```bash
 pnpm add @friehub/taas-sdk
 ```
 
-### Creating Your First Recipe
+### Path A: Building an Autonomous Recipe
+The most powerful way to use TaaS. Define the logic once, run it anywhere.
+
 ```typescript
 import { Recipe, Step, AI, Search } from '@friehub/taas-sdk';
 
-const recipe = Recipe.define({
-  name: "Institutional Truth Feed",
-  description: "Aggregates market sentiment using AI and Search",
+const verifier = Recipe.define({
+  name: "Asset News Sentiment",
   inputs: {
-    symbol: Step.input.string("Asset Symbol", { default: "BTC" })
+    symbol: Step.input.string("Target Asset", { default: "ETH" })
   },
   handler: async (inputs) => {
-    // 1. Perform a proxied web search
-    const news = await Search.query(`Latest news for ${inputs.symbol}`);
+    // 1. Fetch latest market news via Gateway Search
+    const context = await Search.query(`Latest crypto news for ${inputs.symbol}`);
     
-    // 2. Perform AI sentiment analysis via Truth Gateway
-    const analysis = await AI.ask({
+    // 2. Synthesize truth using AI Consensus
+    const result = await AI.ask({
       model: "gemini-2.0-flash",
-      prompt: "Analyze the sentiment of this asset based on the provided news context.",
-      context: news
+      prompt: "Based on the news, is there a significant bullish trend?",
+      context
     });
 
-    return analysis;
+    return result;
   }
 });
 
-const compiled = await recipe.compile();
-console.log(JSON.stringify(compiled, null, 2));
+const blueprint = await verifier.compile();
 ```
 
-## Advanced Features
+### Path B: Using the Truth Gateway Client
+Perfect for traditional backends needing verified data snapshots.
 
-### Multi-Source Synthesis
-The SDK automatically leverages the FTS Protocol's consensus mechanism to aggregate data from multiple independent providers, ensuring 100% accuracy and resilience.
+```typescript
+import { TruthGatewayClient } from '@friehub/taas-sdk';
 
-### Custom Logic Nodes
-Developers can extend the execution engine by defining specialized transition nodes for complex data transformations or ZK-based proof generation.
+const gateway = new TruthGatewayClient('https://api.friehub.cloud');
 
-## Documentation and Support
+// Get verified Bitcoin price from institutional sources
+const btcData = await gateway.finance().price('BTC');
+console.log(`Current Price: ${btcData.value}`);
+```
 
-Comprehensive integration guides and protocol specifications are available in the [Friehub Documentation Portal](https://docs.friehub.protocol).
+---
 
-Copyright (c) 2026 Friehub Protocol.
-Licensed under the MIT License.
+## 🛡️ Security & Best Practices
+- **Environment Isolation**: Always use `process.env.INDEXER_API_URL` to configure your gateway endpoint.
+- **Deterministic Outcomes**: Ensure your recipe logic doesn't rely on `Math.random()` or non-deterministic variables.
+- **Redaction**: The SDK automatically masks sensitive metadata in logs to prevent credential leakage.
+
+---
+© 2026 Friehub Protocol. All Rights Reserved.
+Licensed under the MIT Enterprise License.
