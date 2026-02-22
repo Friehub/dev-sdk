@@ -2,6 +2,13 @@
 
 All notable changes to the TaaS SDK will be documented in this file.
 
+## [Planned]
+
+### TaaS 5.0 Alignment
+- **Wasm Compilation**: Building a compiler backend to emit Wasm-compatible recipes for the upcoming Rust engine.
+- **Fisherman SDK**: High-level tools for developers to run and incentivize truth-verification "Fisherman" nodes.
+
+
 ## [4.0.0] - 2026-02-22
 
 ### Added
