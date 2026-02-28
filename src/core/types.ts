@@ -37,7 +37,12 @@ export interface Recipe {
     };
     logic: {
         pipeline: LogicNode[];
-        resolution: {
+        attestation: {
+            type: string;
+            config: any;
+        };
+        /** @deprecated Use attestation */
+        resolution?: {
             type: string;
             config: any;
         };
@@ -45,7 +50,9 @@ export interface Recipe {
 }
 export interface RecipeExecutionResult {
     success: boolean;
-    winningOutcome: any;
+    truth: any; // NEW: Replaces winningOutcome
+    /** @deprecated Use truth */
+    winningOutcome?: any;
     confidence: number;
     proof?: {
         recipeHash: string;

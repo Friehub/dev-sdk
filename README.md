@@ -6,7 +6,7 @@
 
 ---
 
-## 🏛️ Core Capabilities
+## Core Capabilities
 
 This SDK abstracts the complexity of decentralized data fetching and consensus, providing three primary integration paths:
 
@@ -29,7 +29,7 @@ Native integration with the Friehub Prediction Engine:
 
 ---
 
-## 📊 Available Data Domains
+## Available Data Domains
 
 Through the `TruthGatewayClient`, developers have immediate access to:
 
@@ -42,7 +42,7 @@ Through the `TruthGatewayClient`, developers have immediate access to:
 
 ---
 
-## 🎨 Example Gallery
+## Example Gallery
 
 Explore full implementation templates in the [/examples](file:///home/oxisrael/Friehub/Taas/taas-sdk/examples) directory:
 
@@ -52,7 +52,7 @@ Explore full implementation templates in the [/examples](file:///home/oxisrael/F
 
 ---
 
-## 🚀 Quick Start Guide
+## Quick Start Guide
 
 ### Installation
 ```bash
@@ -103,11 +103,11 @@ console.log(`Current Price: ${btcData.value}`);
 
 ---
 
-## 🛡️ Security & Best Practices
+## Security & Best Practices
 - **Environment Isolation**: Always use `process.env.INDEXER_API_URL` to configure your gateway endpoint.
 - **Deterministic Outcomes**: Ensure your recipe logic doesn't rely on `Math.random()` or non-deterministic variables.
 - **Redaction**: The SDK automatically masks sensitive metadata in logs to prevent credential leakage.
 
 ---
-© 2026 Friehub Protocol. All Rights Reserved.
+ 2026 Friehub Protocol. All Rights Reserved.
 Licensed under the MIT Enterprise License.

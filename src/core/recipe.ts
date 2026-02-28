@@ -21,7 +21,9 @@ export interface RecipeConfig {
     outcomeType?: OutcomeType;
     /** Typed input parameters required by the handler. */
     inputs: { [key: string]: VariableDef };
-    /** The async handler where the truth logic is defined using SDK nodes. */
+    /** The final truth attestation strategy (default: 'expression') */
+    attestation?: { type: string, config: any };
+    /** The async handler where the logic is defined. */
     handler: (inputs: any) => Promise<any>;
 }
 
@@ -86,7 +88,14 @@ export class RecipeDefinition {
             },
             logic: {
                 pipeline: nodes,
-                resolution: {
+                attestation: this.config.attestation || {
+                    type: 'expression',
+                    config: {
+                        expression: finalExpression
+                    }
+                },
+                // Backward compatibility
+                resolution: this.config.attestation || {
                     type: 'expression',
                     config: {
                         expression: finalExpression
