@@ -1,16 +1,35 @@
 import { LogicNode } from './types';
+import { AsyncLocalStorage } from 'async_hooks';
 
+/**
+ * Thread-safe Context for building Recipe DAGs.
+ * Uses AsyncLocalStorage to prevent node leakage between concurrent builds.
+ */
 export class BuilderContext {
-    private static instance: BuilderContext;
+    private static storage = new AsyncLocalStorage<BuilderContext>();
     private nodes: LogicNode[] = [];
     private active: boolean = false;
 
-    // Singleton for the current build session
+    /**
+     * Retrieves the context for the current asynchronous execution branch.
+     * Falls back to a global singleton ONLY if no active session is found (for legacy/simple scripts).
+     */
     static get(): BuilderContext {
-        if (!BuilderContext.instance) {
-            BuilderContext.instance = new BuilderContext();
+        const context = this.storage.getStore();
+        if (!context) {
+            // Fallback for non-concurrent usage
+            return global['__taas_global_ctx'] || (global['__taas_global_ctx'] = new BuilderContext());
         }
-        return BuilderContext.instance;
+        return context;
+    }
+
+    /**
+     * Executes a build handler within a secure, isolated context.
+     */
+    static run<T>(fn: (ctx: BuilderContext) => T): T {
+        const context = new BuilderContext();
+        context.active = true;
+        return this.storage.run(context, () => fn(context));
     }
 
     start() {
@@ -24,13 +43,6 @@ export class BuilderContext {
     }
 
     addNode(node: LogicNode) {
-        if (!this.active) {
-            // If not active, we might be just defining a recipe, or running in a test.
-            // For the Transpiler, we expect to be in a 'compile' phase.
-            // checking active might be too strict if we want to test steps individually.
-            // For now, let's allow it but warn.
-            // console.warn("BuilderContext: Adding node outside active build session");
-        }
         this.nodes.push(node);
     }
 

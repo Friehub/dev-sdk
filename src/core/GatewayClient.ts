@@ -34,6 +34,14 @@ export class TruthGatewayClient {
     }
 
     /**
+     * Retrieves a directory of all available truth providers (feeds) and their capabilities.
+     */
+    async getFeeds(): Promise<any> {
+        const response = await axios.get(`${this.baseUrl}/gateway/feeds`);
+        return response.data;
+    }
+
+    /**
      * Semantic Helper: Sports Data
      */
     sports() {
@@ -76,12 +84,23 @@ export class TruthGatewayClient {
     }
 
     /**
-     * Verify a full recipe blueprint.
+     * Verify a full recipe blueprint without saving it.
      */
     async verify(template: any, inputs: any = {}) {
         const response = await axios.post(`${this.baseUrl}/proxy/verify`, {
             template,
             inputs
+        });
+        return response.data;
+    }
+
+    /**
+     * Submit a new recipe template to the global registry.
+     * Requires admin/authorized token if the gateway is protected.
+     */
+    async submitTemplate(template: any, token?: string) {
+        const response = await axios.post(`${this.baseUrl}/gateway/templates`, template, {
+            headers: token ? { Authorization: `Bearer ${token}` } : {}
         });
         return response.data;
     }

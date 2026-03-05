@@ -48,60 +48,58 @@ export class RecipeDefinition {
     constructor(public config: RecipeConfig) { }
 
     async compile(idOverride?: string): Promise<Recipe> {
-        const ctx = BuilderContext.get();
-        ctx.start();
+        return BuilderContext.run(async (ctx) => {
+            const inputProxies: any = {};
+            const variables: VariableDef[] = [];
 
-        const inputProxies: any = {};
-        const variables: VariableDef[] = [];
+            for (const [key, def] of Object.entries(this.config.inputs)) {
+                const varDef = { ...def, name: key } as VariableDef;
+                variables.push(varDef);
+                inputProxies[key] = `\${${key}}`;
+            }
 
-        for (const [key, def] of Object.entries(this.config.inputs)) {
-            const varDef = { ...def, name: key } as VariableDef;
-            variables.push(varDef);
-            inputProxies[key] = `\${${key}}`;
-        }
+            const result = await this.config.handler(inputProxies);
+            const nodes = ctx.getNodes();
 
-        const result = await this.config.handler(inputProxies);
-        const nodes = ctx.stop();
+            let finalExpression = '0';
+            if (typeof result === 'string' && result.startsWith('truth_')) {
+                finalExpression = `\${${result}}`;
+            } else if (result?.targetVar) {
+                finalExpression = `\${${result.targetVar}}`;
+            } else {
+                finalExpression = String(result);
+            }
 
-        let finalExpression = '0';
-        if (typeof result === 'string' && result.startsWith('node_')) {
-            finalExpression = result;
-        } else if (typeof result === 'object' && result?.targetVar) {
-            finalExpression = result.targetVar;
-        } else {
-            finalExpression = String(result);
-        }
-
-        return {
-            id: idOverride || this.config.name.toLowerCase().replace(/\s+/g, '-'),
-            metadata: {
-                name: this.config.name,
-                description: this.config.description || '',
-                category: this.config.category || 'General',
-                version: '3.2.0', // Rich outcomes version
-                outcomeType: this.config.outcomeType || 'BINARY' // Default to binary for backward compat
-            },
-            ui: {
-                titleTemplate: `${this.config.name}`,
-                variables: variables,
-                outcomeType: this.config.outcomeType || 'SCALAR' // UI hint
-            },
-            logic: {
-                pipeline: nodes,
-                attestation: this.config.attestation || {
-                    type: 'expression',
-                    config: {
-                        expression: finalExpression
-                    }
+            return {
+                id: idOverride || this.config.name.toLowerCase().replace(/\s+/g, '-'),
+                metadata: {
+                    name: this.config.name,
+                    description: this.config.description || '',
+                    category: this.config.category || 'General',
+                    version: '3.2.0',
+                    outcomeType: this.config.outcomeType || 'BINARY'
                 },
-                // Backward compatibility
-                resolution: this.config.attestation || {
-                    type: 'expression',
-                    config: {
-                        expression: finalExpression
+                ui: {
+                    titleTemplate: `${this.config.name}`,
+                    variables: variables,
+                    outcomeType: this.config.outcomeType || 'SCALAR'
+                },
+                logic: {
+                    pipeline: nodes,
+                    attestation: this.config.attestation || {
+                        type: 'expression',
+                        config: {
+                            expression: finalExpression
+                        }
+                    },
+                    resolution: this.config.attestation || {
+                        type: 'expression',
+                        config: {
+                            expression: finalExpression
+                        }
                     }
                 }
-            }
-        };
+            };
+        });
     }
 }
