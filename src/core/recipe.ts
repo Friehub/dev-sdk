@@ -102,4 +102,14 @@ export class RecipeDefinition {
             };
         });
     }
+
+    /**
+     * Compiles and deploys the recipe to a TaaS Gateway in one step.
+     * @param client The TruthGatewayClient to use for submission.
+     * @param token Authorization token for the gateway.
+     */
+    async deploy(client: any, token?: string) {
+        const blueprint = await this.compile();
+        return await client.submitTemplate(blueprint, token);
+    }
 }
