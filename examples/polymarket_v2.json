@@ -1,0 +1,83 @@
+{
+  "id": "crypto-price-prediction-(above-x)",
+  "metadata": {
+    "id": "crypto-price-prediction-(above-x)",
+    "name": "Crypto Price Prediction (Above X)",
+    "description": "Determines if an asset is above a target price at a specific date.",
+    "category": "PREDICTION_MARKET",
+    "version": "3.2.0",
+    "outcomeType": "BINARY"
+  },
+  "ui": {
+    "titleTemplate": "Crypto Price Prediction (Above X)",
+    "variables": [
+      {
+        "type": "string",
+        "label": "Crypto Asset",
+        "name": "asset",
+        "required": true,
+        "component": "dynamic-search",
+        "source": {
+          "gatewayMethod": "discovery.crypto"
+        },
+        "hint": "Search for any crypto asset supported by CoinGecko/Binance"
+      },
+      {
+        "type": "number",
+        "label": "Target Price ($)",
+        "name": "targetPrice",
+        "required": true,
+        "component": "number",
+        "placeholder": "100000",
+        "hint": "Enter the strike price for this market"
+      },
+      {
+        "type": "date",
+        "label": "Resolution Date",
+        "name": "resolutionDate",
+        "required": true,
+        "component": "date",
+        "hint": "When should the price be checked?"
+      }
+    ],
+    "truthType": "BINARY"
+  },
+  "logic": {
+    "pipeline": [
+      {
+        "id": "truth_86185",
+        "type": "standard-feed",
+        "category": "crypto",
+        "method": "priceAt",
+        "params": {
+          "symbol": "${asset}",
+          "timestamp": "${resolutionDate}"
+        },
+        "targetVar": "truth_86185"
+      },
+      {
+        "id": "cond_8541",
+        "type": "condition",
+        "params": {},
+        "expression": "${truth_86185} >= ${${targetPrice}}",
+        "onTrue": [
+          "true"
+        ],
+        "onFalse": [
+          "false"
+        ],
+        "targetVar": "cond_8541",
+        "dependencies": [
+          "truth_86185",
+          "${targetPrice"
+        ]
+      }
+    ],
+    "attestation": {
+      "type": "expression",
+      "config": {
+        "expression": "cond_8541"
+      }
+    }
+  }
+}

@@ -1,5 +1,6 @@
 import {
-    Recipe,
+    RecipeTemplate,
+    RecipeBlueprint,
     LogicNode,
     VariableDef,
     RecipeExecutionResult
@@ -8,4 +9,9 @@ import {
 export type NodeId = string;
 export type VarName = string;
 
-export type { Recipe, LogicNode, VariableDef, RecipeExecutionResult };
+export type { RecipeTemplate, RecipeBlueprint, LogicNode, VariableDef, RecipeExecutionResult };
+
+/**
+ * @deprecated Use `RecipeTemplate` instead. Will be removed in v4.0.0.
+ */
+export type IRecipe = RecipeTemplate;

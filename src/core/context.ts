@@ -9,6 +9,7 @@ export class BuilderContext {
     private static storage = new AsyncLocalStorage<BuilderContext>();
     private nodes: LogicNode[] = [];
     private active: boolean = false;
+    private nodeCounter: number = 0;
 
     /**
      * Retrieves the context for the current asynchronous execution branch.
@@ -18,7 +19,7 @@ export class BuilderContext {
         const context = this.storage.getStore();
         if (!context) {
             // Fallback for non-concurrent usage
-            return global['__taas_global_ctx'] || (global['__taas_global_ctx'] = new BuilderContext());
+            return (global as any)['__taas_global_ctx'] || ((global as any)['__taas_global_ctx'] = new BuilderContext());
         }
         return context;
     }
@@ -48,5 +49,9 @@ export class BuilderContext {
 
     getNodes() {
         return this.nodes;
+    }
+
+    getNextId(prefix: string) {
+        return `${prefix}_${++this.nodeCounter}`;
     }
 }

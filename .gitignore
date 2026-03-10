@@ -10,6 +10,8 @@ build/
 dist/
 *.tsbuildinfo
 .pnpm-debug.log*
+.turbo
+pnpm-lock.yaml
 
 # Dependencies
 /lib

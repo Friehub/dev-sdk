@@ -28,59 +28,21 @@ export class TruthGatewayClient {
 
     /**
      * Generic Truth Discovery Query
+     * Proxies a discovery request to the Gateway.
      */
-    async discover(providerId: string, params: any = {}) {
-        return this._exec(providerId, params);
+    async discover(path: string, params: any = {}) {
+        const response = await axios.get(`${this.baseUrl}/gateway/discovery`, {
+            params: { path, ...params }
+        });
+        return response.data;
     }
 
     /**
      * Retrieves a directory of all available truth providers (feeds) and their capabilities.
      */
-    async getFeeds(): Promise<any> {
-        const response = await axios.get(`${this.baseUrl}/gateway/feeds`);
+    async getCapabilities(): Promise<any> {
+        const response = await axios.get(`${this.baseUrl}/gateway/capabilities`);
         return response.data;
-    }
-
-    /**
-     * Semantic Helper: Sports Data
-     */
-    sports() {
-        return {
-            livescore: (league: string) => this._exec('sports', { league }),
-            schedule: (league: string, date?: string) => this._exec('sports', { league, date, type: 'schedule' }),
-            matchDetails: (matchId: string) => this._exec('sports', { matchId })
-        };
-    }
-
-    /**
-     * Semantic Helper: Crypto/Finance Data
-     */
-    finance() {
-        return {
-            price: (symbol: string) => this._exec('crypto', { symbol }),
-            priceAt: (symbol: string, timestamp: number) => this._exec('crypto', { symbol, timestamp }),
-            forex: (pair: string) => this._exec('forex', { pair })
-        };
-    }
-
-    /**
-     * Semantic Helper: Weather/Environmental Data
-     */
-    environmental() {
-        return {
-            current: (lat: number, lon: number) => this._exec('weather', { latitude: lat, longitude: lon }),
-            forecast: (lat: number, lon: number) => this._exec('weather', { latitude: lat, longitude: lon, type: 'forecast' })
-        };
-    }
-
-    /**
-     * Semantic Helper: Economics
-     */
-    economics() {
-        return {
-            series: (seriesId: string) => this._exec('economics', { seriesId }),
-            search: (query: string) => this._exec('economics', { query, type: 'search' })
-        };
     }
 
     /**
@@ -100,6 +62,25 @@ export class TruthGatewayClient {
      */
     async submitTemplate(template: any, token?: string) {
         const response = await axios.post(`${this.baseUrl}/gateway/templates`, template, {
+            headers: token ? { Authorization: `Bearer ${token}` } : {}
+        });
+        return response.data;
+    }
+
+    /**
+     * Simulates the recipe execution through the Gateway for monetized testing.
+     * Proxies the blueprint and inputs to a Truth Node and returns the trace.
+     * @param blueprint The compiled JSON recipe blueprint.
+     * @param inputs The required user inputs.
+     * @param apiKey The developer's TaaS API key for billing.
+     */
+    async simulate(blueprint: any, inputs: any = {}, apiKey?: string) {
+        // Fallback to environment variable if not provided explicitly
+        const token = apiKey || process.env.TAAS_API_KEY;
+        const response = await axios.post(`${this.baseUrl}/gateway/simulate`, {
+            template: blueprint,
+            inputs
+        }, {
             headers: token ? { Authorization: `Bearer ${token}` } : {}
         });
         return response.data;
