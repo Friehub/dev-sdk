@@ -1,5 +1,5 @@
 {
-    "name": "@friehub/taas-sdk",
+    "name": "@taas/sdk",
     "version": "1.1.0",
     "private": true,
     "description": "",
@@ -20,8 +20,9 @@
         "taas": "./src/cli/index.js"
     },
     "dependencies": {
-        "@friehub/execution-engine": "workspace:*",
-        "@friehub/taas-interfaces": "workspace:*",
+        "@taas/execution-engine": "workspace:*",
+        "@taas/core-rs": "workspace:*",
+        "@taas/protocol": "workspace:*",
         "axios": "^1.7.9",
         "commander": "^12.0.0",
         "express": "^5.2.1",

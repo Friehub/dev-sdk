@@ -24,9 +24,9 @@ jobs:
 
       - name: Link latest core (Mocked for local dev)
         run: |
-          echo "Updating @friehub/taas-contracts to latest main commit..."
+          echo "Updating @taas/taas-contracts to latest main commit..."
           # In a real CI, this would run:
-          # pnpm update @friehub/taas-contracts
+          # pnpm update @taas/taas-contracts
           
       - name: Run Build & Tests
         run: pnpm run build

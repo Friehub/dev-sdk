@@ -1,113 +1,96 @@
-# @friehub/taas-sdk
+#@taas/sdk
 
-**Developer SDK for the TaaS Protocol**
+**The Fluent Developer Kit for Programmable Oracles.**
 
-`@friehub/taas-sdk` provides the core type definitions, interfaces, and client utilities used by developers integrating with the TaaS Truth-as-a-Service ecosystem. It is the foundational layer shared between TaaS nodes, gateways, backends, and plugin authors.
-
----
+`@taas/sdk` is the easiest way to build, simulate, and deploy verifiable oracle logic. It features a chainable "Fluent API" that allows you to define complex data intents in seconds.
 
 ## Installation
 
 ```bash
-pnpm add @friehub/taas-sdk
+pnpm add@taas/sdk
 ```
+
+## The Fluent Vision
+
+TaaS moves beyond "Data-as-a-Service" to "Verdict-as-a-Service". Instead of fetching raw JSON and processing it in your smart contract, you define the logic at the source.
+
+### Example: Sports Prediction Market
+"Will Mason score a winning goal?"
+
+```typescript
+import { TaaS } from '@taas/sdk';
+
+const intent = TaaS.intent('mason-winning-goal')
+    .sports('match_123').score() 
+    .check('total_goals > 2')     
+    .sports('match_123').events() 
+    .check("match_events.some(e => e.player === 'Mason' && e.type === 'goal')")
+    .attest(); // Returns a signed recipe for the Gateway
+```
+
+## 🛠 Features
+
+-   **Fluent API**: Chainable methods for data fetching and logical checks.
+-   **Proxy-based Discovery**: Automatically maps to Gateway capabilities.
+-   **Simulation Parity**: Uses `@taas/core-rs` (WASM) locally to ensure simulation perfectly matches production execution.
+-   **verifiable Proofs**: All results returned by the Gateway include cryptographic signatures verify-able on-chain.
+
+### 3. `TruthGatewayClient`
+A low-level gRPC/HTTP client for direct interaction with TaaS Gateways.
 
 ---
 
-## What's Included
+## 🏀 Sports Dictionary
 
-### Type Definitions
+The TaaS Gateway includes a high-fidelity sports dictionary with multi-source consensus. You can fetch data using natural parameters (GIM) without needing provider-specific IDs.
 
-Shared types used across all TaaS components:
-
-```typescript
-import {
-    RecipeExecutionResult,
-    TruthAttestation,
-    ExecutionProof,
-    OutcomeType
-} from '@friehub/taas-sdk';
-
-// RecipeExecutionResult: returned by the execution-engine
-const result: RecipeExecutionResult = {
-    success: true,
-    winningOutcome: 1,
-    signature: '0x...',
-    proof: {
-        recipeHash: '0x...',
-        executionTrace: [...]
-    }
-};
-```
-
-### TruthGatewayClient
-
-A typed HTTP client for interacting with the TaaS Truth Gateway. Use this when you need verified data without running a full node.
+### Anonymous Data Fetching (GIM)
+Fetch any match or team data by name. The Gateway automatically resolves the ID for you.
 
 ```typescript
-import { TruthGatewayClient } from '@friehub/taas-sdk';
-
-const client = new TruthGatewayClient({
-    baseUrl: process.env.INDEXER_API_URL || 'https://gateway.friehub.com'
+// Fetch by team names (Gateway resolves the match ID)
+const score = await TaaS.sports('football').score({ 
+    homeTeam: 'Arsenal', 
+    awayTeam: 'Liverpool' 
 });
 
-// Fetch verified price data
-const btcPrice = await client.finance().price('BTC');
-
-// Fetch sports data
-const match = await client.sports().livescore('EPL');
+// Fetch team details by name
+const info = await TaaS.sports('team').detail({ teamName: 'Chelsea' });
 ```
 
-### Available Gateway Domains
+### Available Methods
 
-| Domain | Methods | Description |
-|---|---|---|
-| `finance()` | `price(symbol)`, `priceAt(symbol, timestamp)` | Spot and historical prices |
-| `sports()` | `livescore(league)`, `result(matchId)` | Live scores and match results |
-| `economics()` | `series(id)` | FRED macro-economic indicators |
-| `weather()` | `current(lat, lon)` | Real-time weather conditions |
+| Category | Method | Description |
+| :--- | :--- | :--- |
+| **Football** | `score` | Real-time score & status (Consensus) |
+| | `statistics` | Granular in-play stats (Shots, Corners, Possession) |
+| | `events` | Chronological match events |
+| | `lineup` | Starting XI and bench |
+| | `cards`/`goals`/`subs` | Filtered event streams |
+| | `status` | Cancellation/Postponement verification |
+| **Basketball** | `score` | NBA/Live scores with period precision |
+| **Discovery** | `league.list` | List all supported leagues |
+| | `team.list` | List teams in a league |
+| | `player.list` | List players in a team |
+| **Intelligence** | `league.standings` | Current league table |
+| | `league.upcoming` | Scheduled matches |
+| | `league.top_scorers` | Golden boot tracking |
+| | `team.results` | Team form (last 5 results) |
 
 ---
 
-## Recipe Authoring
+---
 
-The SDK provides types for authoring and compiling TaaS Recipes:
+## Developer Experience (DX)
 
-```typescript
-import { RecipeBlueprint, OutcomeType } from '@friehub/taas-sdk';
+```bash
+# Build the SDK
+pnpm build
 
-const recipe: RecipeBlueprint = {
-    id: 'btc-dominance-binary',
-    version: '1.0.0',
-    outcomeType: OutcomeType.BINARY,
-    inputs: {
-        threshold: { type: 'number', required: true, default: 50 }
-    },
-    logic: {
-        // Declarative logic definition executed by @friehub/execution-engine
-    }
-};
+# Run verify vision script
+pnpm ts-node src/verify_vision.ts
 ```
 
 ---
 
-## Security
-
-- All types are strict — no `any` on public API boundaries.
-- The `TruthGatewayClient` uses HTTPS and validates response schemas automatically.
-- Execution results include cryptographic proofs; consumers should always verify the `signature` field against the on-chain `TruthOracleV2` contract.
-
----
-
-## Related Packages
-
-| Package | Role |
-|---|---|
-| `@friehub/execution-engine` | Executes compiled recipes |
-| `@friehub/recipes` | Recipe registry and instance management |
-| `@friehub/sovereign-logic` | Data adapter orchestration |
-| `@friehub/taas-plugins` | Domain-specific data source adapters |
-
----
-
-© 2026 Friehub Organization. All Rights Reserved.
+© 2026 TaaS Foundation. Part of the Sovereign Data Layer.

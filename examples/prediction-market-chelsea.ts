@@ -1,4 +1,4 @@
-import { Recipe, RecipeConfig } from '@friehub/taas-sdk';
+import { Recipe, RecipeConfig } from '@taas/taas-sdk';
 
 /**
  * Natural Recipe Template: Sports Event Resolution

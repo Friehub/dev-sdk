@@ -17,7 +17,27 @@ export class TruthGatewayClient {
     }
 
     /**
-     * Internal query execution
+     * Executes a single capability node on the Gateway.
+     */
+    async executeNode(node: { category: string, method: string, params?: any }) {
+        const timestamp = Date.now();
+        const response = await axios.post(`${this.baseUrl}/execute-node`, {
+            requestId: `sdk-exec-${timestamp}`,
+            node: {
+                id: node.method || `node-${timestamp}`,
+                type: 'standard-feed',
+                ...node,
+                args: [],
+                targetVar: 'result'
+            },
+            context: {},
+            attestationTimestamp: timestamp
+        });
+        return response.data;
+    }
+
+    /**
+     * Internal query execution (Legacy/Proxy)
      */
     private async _exec(provider: string, params: any = {}) {
         const response = await axios.get(`${this.baseUrl}/proxy/truth`, {
@@ -31,7 +51,7 @@ export class TruthGatewayClient {
      * Proxies a discovery request to the Gateway.
      */
     async discover(path: string, params: any = {}) {
-        const response = await axios.get(`${this.baseUrl}/gateway/discovery`, {
+        const response = await axios.get(`${this.baseUrl}/discovery`, {
             params: { path, ...params }
         });
         return response.data;
@@ -41,7 +61,32 @@ export class TruthGatewayClient {
      * Retrieves a directory of all available truth providers (feeds) and their capabilities.
      */
     async getCapabilities(): Promise<any> {
-        const response = await axios.get(`${this.baseUrl}/gateway/capabilities`);
+        const response = await axios.get(`${this.baseUrl}/discovery`);
+        return response.data;
+    }
+
+    /**
+     * Retrieves a list of available nodes/plugins from the Gateway.
+     * Essential for "Dynamic SDK" behavior where developers explore capabilities at runtime.
+     */
+    async getNodes(): Promise<any[]> {
+        const response = await axios.get(`${this.baseUrl}/discovery`);
+        return response.data;
+    }
+
+    /**
+     * Off-chain logic testing (Monetized Simulation).
+     * Developers are charged via API Key usage to test their recipes.
+     * This abstracts away internal TaaS tokens for better DX.
+     */
+    async test(template: any, inputs: any = {}, apiKey?: string) {
+        const token = apiKey || process.env.TAAS_API_KEY;
+        const response = await axios.post(`${this.baseUrl}/v1/simulate`, {
+            template,
+            inputs
+        }, {
+            headers: token ? { Authorization: `Bearer ${token}` } : {}
+        });
         return response.data;
     }
 
@@ -57,30 +102,10 @@ export class TruthGatewayClient {
     }
 
     /**
-     * Submit a new recipe template to the global registry.
-     * Requires admin/authorized token if the gateway is protected.
+     * Submit a new recipe template for production execution.
      */
-    async submitTemplate(template: any, token?: string) {
+    async deploy(template: any, token?: string) {
         const response = await axios.post(`${this.baseUrl}/gateway/templates`, template, {
-            headers: token ? { Authorization: `Bearer ${token}` } : {}
-        });
-        return response.data;
-    }
-
-    /**
-     * Simulates the recipe execution through the Gateway for monetized testing.
-     * Proxies the blueprint and inputs to a Truth Node and returns the trace.
-     * @param blueprint The compiled JSON recipe blueprint.
-     * @param inputs The required user inputs.
-     * @param apiKey The developer's TaaS API key for billing.
-     */
-    async simulate(blueprint: any, inputs: any = {}, apiKey?: string) {
-        // Fallback to environment variable if not provided explicitly
-        const token = apiKey || process.env.TAAS_API_KEY;
-        const response = await axios.post(`${this.baseUrl}/gateway/simulate`, {
-            template: blueprint,
-            inputs
-        }, {
             headers: token ? { Authorization: `Bearer ${token}` } : {}
         });
         return response.data;

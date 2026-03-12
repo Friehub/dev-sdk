@@ -1,13 +1,26 @@
 import {
     RecipeTemplate,
     RecipeBlueprint,
-    LogicNode,
     VariableDef,
     RecipeExecutionResult
-} from '@friehub/taas-interfaces';
+} from '@taas/taas-interfaces';
 
 export type NodeId = string;
 export type VarName = string;
+
+export interface LogicNode {
+    type: 'transform' | 'aggregate' | 'consensus' | 'standard-feed' | 'universal-request' | 'graphql-request' | 'chain-rpc' | 'condition' | 'script';
+    id: string;
+    dependencies: string[];
+    targetVar: string;
+    [key: string]: any;
+}
+
+export interface ScriptNode extends LogicNode {
+    type: 'script';
+    language: string;
+    code: string;
+}
 
 export type { RecipeTemplate, RecipeBlueprint, LogicNode, VariableDef, RecipeExecutionResult };
 
