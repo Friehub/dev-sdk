@@ -28,7 +28,7 @@ const intent = TaaS.intent('mason-winning-goal')
     .attest(); // Returns a signed recipe for the Gateway
 ```
 
-## 🛠 Features
+## Features
 
 -   **Fluent API**: Chainable methods for data fetching and logical checks.
 -   **Proxy-based Discovery**: Automatically maps to Gateway capabilities.
@@ -40,25 +40,25 @@ A low-level gRPC/HTTP client for direct interaction with TaaS Gateways.
 
 ---
 
-## 🏀 Sports Dictionary
+## Sports Dictionary
 
-The TaaS Gateway includes a high-fidelity sports dictionary with multi-source consensus. You can fetch data using natural parameters (GIM) without needing provider-specific IDs.
+The TaaS Gateway includes a high-fidelity sports dictionary with multi-source consensus. The system supports natural parameter resolution (GIM), removing the requirement for provider-specific identifiers.
 
 ### Anonymous Data Fetching (GIM)
-Fetch any match or team data by name. The Gateway automatically resolves the ID for you.
+Fetch match or team data via name-based resolution. The Gateway translates these into provider IDs automatically.
 
 ```typescript
-// Fetch by team names (Gateway resolves the match ID)
+// Fetch via team names (Internal resolution)
 const score = await TaaS.sports('football').score({ 
     homeTeam: 'Arsenal', 
     awayTeam: 'Liverpool' 
 });
 
-// Fetch team details by name
+// Fetch team details via name lookup
 const info = await TaaS.sports('team').detail({ teamName: 'Chelsea' });
 ```
 
-### Available Methods
+### Supported Methods
 
 | Category | Method | Description |
 | :--- | :--- | :--- |
