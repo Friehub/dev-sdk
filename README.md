@@ -21,10 +21,10 @@ TaaS moves beyond "Data-as-a-Service" to "Verdict-as-a-Service". Instead of fetc
 import { TaaS } from '@taas/sdk';
 
 const intent = TaaS.intent('mason-winning-goal')
-    .sports('match_123').score() 
-    .check('total_goals > 2')     
-    .sports('match_123').events() 
-    .check("match_events.some(e => e.player === 'Mason' && e.type === 'goal')")
+    .sports('football').score({ homeTeam: 'Arsenal', awayTeam: 'Chelsea' }) 
+    .check('home_score > 2')     
+    .sports('football').events({ homeTeam: 'Arsenal', awayTeam: 'Chelsea' }) 
+    .check("events.some(e => e.player === 'Mason' && e.type === 'goal')")
     .attest(); // Returns a signed recipe for the Gateway
 ```
 
