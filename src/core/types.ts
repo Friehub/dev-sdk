@@ -3,7 +3,7 @@ import {
     RecipeBlueprint,
     VariableDef,
     RecipeExecutionResult
-} from '@taas/taas-interfaces';
+} from '@taas/interfaces';
 
 export type NodeId = string;
 export type VarName = string;
